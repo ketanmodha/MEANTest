@@ -83,3 +83,13 @@ exports.delete = (req, res) =>{
 		}
 	});
 };
+exports.get = (req, res) =>{
+	let projectId = req.params.projectId;
+	Projects.findById(projectId,(err, item)=>{
+		if(!err){
+			res.json(item);
+		}else{
+			res.json(err);
+		}
+	});
+};
