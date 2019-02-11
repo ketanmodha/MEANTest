@@ -16,7 +16,9 @@ exports.store = (req, res) =>{
 	req.body.endDate = Math.floor(new Date(req.body.endDate) / 1000);
 	async function saveUsers() {
 		for(var i = 0; i < req.body.users.length; i++) {
+			
 			req.body.users[i]['_id'] = new mongoose.Types.ObjectId();
+			console.log(req.body.users[i]);
 			newUser = new Users(req.body.users[i]);
 			await newUser.save();
 		}
@@ -58,6 +60,7 @@ exports.update = (req, res) =>{
 	// 	console.log(oldUsers);
 	// 	res.send({'project':'update '+projectId});
 	// });
+	req.body.users = [];
 	req.body.startDate = Math.floor(new Date(req.body.startDate) / 1000);
 	req.body.endDate = Math.floor(new Date(req.body.endDate) / 1000);
 	Projects.findOneAndUpdate({_id: projectId}, {$set: req.body}, {new: true,useFindAndModify: false},(err, item)=>{
@@ -91,5 +94,5 @@ exports.get = (req, res) =>{
 		}else{
 			res.json(err);
 		}
-	});
+	}).populate('users');
 };
