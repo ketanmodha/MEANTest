@@ -8,8 +8,10 @@ let ProjectSchema = new Schema({
 	endDate: Number,
 	status: {type: String, enum: ['1','2','3','4']},
 	users: [{ type: Schema.Types.ObjectId, ref: 'Users' }],
-	createdAt: {type: Number,default:Math.floor(new Date() / 1000)},
-	updatedAt: {type: Number,default:Math.floor(new Date() / 1000)}
+	createdAt: {type: Number,default:Math.floor(new Date())},
+	updatedAt: {type: Number,default:Math.floor(new Date())}
+	// createdAt: {type: Number,default:Math.floor(new Date() / 1000)},
+	// updatedAt: {type: Number,default:Math.floor(new Date() / 1000)}
 });
 
 // ProjectSchema.pre('validate', function(next) {
