@@ -1,8 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+dbConfig = require('./config/configLoader');
 
-const db = mongoose.connect('mongodb://localhost/PMSCrud',{ useNewUrlParser: true })
+const db = mongoose.connect('mongodb://' + dbConfig.databaseConfig.host + ":" + dbConfig.databaseConfig.port + '/' + dbConfig.databaseConfig.database,{ useNewUrlParser: true })
 .then(() => console.log('Now connected to MongoDB!'))
 .catch(err => console.error('Something went wrong', err));
 
@@ -13,7 +14,7 @@ app.use(bodyParser.urlencoded({
   extended: true
 })); 
 app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
+  res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
   res.setHeader('Access-Control-Allow-Credentials', true);
@@ -23,8 +24,9 @@ const Projects = require('./routes/ProjectsRoute');
 
 app.use('/projects',Projects);
 
-const port = 3000;
-
-app.listen(port, ()=>{
+const host = dbConfig.nodeConfig.host;
+const port = dbConfig.nodeConfig.port;
+console.log(dbConfig);
+app.listen(port, host, ()=>{
 	console.log('server is running');
 })
