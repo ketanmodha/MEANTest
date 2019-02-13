@@ -1,7 +1,7 @@
 {
     "databaseConfig": {
-        "host": "192.168.1.99",
-        "port": "27017",
+        "host": "192.168.1.58",
+        "port": "27014",
         "database": "PMSCrud"
     },
     "nodeConfig": {
