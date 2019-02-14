@@ -12,27 +12,16 @@ exports.index = (req, res) =>{
 	});
 };
 exports.store = (req, res) =>{
-	async function saveUsers() {
-		for(var i = 0; i < req.body.users.length; i++) {
-			req.body.users[i]['_id'] = new mongoose.Types.ObjectId();
-			console.log(req.body.users[i]);
-			newUser = new Users(req.body.users[i]);
-			await newUser.save();
+	newUser = new Users(req.body);
+	newUser.save((err, user)=>{
+		if(!err){
+			console.log('User saved succesfully.');
+			res.json(user);
+		}else{
+			console.log('User not saved.');
+			res.json(err);
 		}
-	}
-	saveUsers().then(()=>{
-		console.log(req.body);
-		newUser = new Users(req.body);
-		newUser.save((err, user)=>{
-			if(!err){
-				console.log('User saved succesfully.');
-				res.json(user);
-			}else{
-				console.log('User not saved.');
-				res.json(err);
-			}
-		})
-	});
+	})
 };
 exports.update = (req, res) =>{
 	let userId = req.params.userId;
