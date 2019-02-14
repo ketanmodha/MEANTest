@@ -20,7 +20,7 @@ exports.store = (req, res) => {
 			req.body.users[i]['_id'] = new mongoose.Types.ObjectId();
 			//console.log(req.body.users[i]);
 			newUser = new Users(req.body.users[i]);
-			await newUser.save();
+			//await newUser.save();
 		}
 	}
 	saveUsers().then(() => {

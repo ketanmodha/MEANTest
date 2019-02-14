@@ -16,6 +16,10 @@ exports.store = (req, res) =>{
 	newUser.save((err, user)=>{
 		if(!err){
 			console.log('User saved succesfully.');
+
+			// create DB
+			databaseName = user.first_name;
+			var SlaveDBConn = mongoose.createConnection('mongodb://' + dbConfig.databaseConfig.host + ":" + dbConfig.databaseConfig.port + '/' + databaseName,{ useNewUrlParser: true });
 			res.json(user);
 		}else{
 			console.log('User not saved.');
