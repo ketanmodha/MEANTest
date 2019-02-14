@@ -22,6 +22,9 @@ app.use((req, res, next) => {
 const Projects = require('./routes/ProjectsRoute');
 
 app.use('/projects',Projects);
+const Users = require('./routes/UsersRoute');
+
+app.use('/users',Users);
 
 const port = 3000;
 
