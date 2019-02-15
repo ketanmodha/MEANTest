@@ -64,3 +64,16 @@ exports.get = (req, res) =>{
 		}
 	}).populate('users');
 };
+exports.login = (req, res) =>{
+	Users.findOne({first_name: req.body.firstname},(err, item)=>{
+		if(!err){
+			if(item){
+				res.json({'message':'success'});
+			}else{
+				res.json({'message':'fail'});				
+			}
+		}else{
+			res.json(err);
+		}
+	})
+};
