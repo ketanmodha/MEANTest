@@ -16,7 +16,6 @@ exports.store = (req, res) =>{
 	newUser.save((err, user)=>{
 		if(!err){
 			console.log('User saved succesfully.');
-
 			// create DB
 			databaseName = user.first_name;
 			var SlaveDBConn = mongoose.createConnection('mongodb://' + dbConfig.databaseConfig.host + ":" + dbConfig.databaseConfig.port + '/' + databaseName,{ useNewUrlParser: true });
@@ -25,7 +24,9 @@ exports.store = (req, res) =>{
 			console.log('User not saved.');
 			res.json(err);
 		}
+		
 	})
+
 };
 exports.update = (req, res) =>{
 	let userId = req.params.userId;
@@ -35,7 +36,8 @@ exports.update = (req, res) =>{
 	Users.findOneAndUpdate({_id: userId}, {$set: req.body}, {new: true,useFindAndModify: false},(err, item)=>{
 		if(!err){
 			res.json(item);
-		}else{
+		}
+		else{
 			res.json(err);
 		}
 	});
@@ -65,7 +67,7 @@ exports.get = (req, res) =>{
 	}).populate('users');
 };
 exports.login = (req, res) =>{
-	Users.findOne({first_name: req.body.firstname},(err, item)=>{
+	Users.findOne({first_name: req.body.first_name},(err, item)=>{
 		if(!err){
 			if(item){
 				res.json({'message':'success'});

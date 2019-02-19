@@ -21,11 +21,16 @@ app.use((req, res, next) => {
   next();
 });
 const Projects = require('./routes/ProjectsRoute');
-
 app.use('/projects',Projects);
-const Users = require('./routes/UsersRoute');
 
+const Users = require('./routes/UsersRoute');
 app.use('/users',Users);
+
+const Permissions = require('./routes/PermissionRoute');
+app.use('/permissions',Permissions);
+
+const Roles = require('./routes/RolesRoute');
+app.use('/roles',Roles);
 
 const host = dbConfig.nodeConfig.host;
 const port = dbConfig.nodeConfig.port;
