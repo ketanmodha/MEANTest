@@ -1,35 +1,9 @@
 const Permissions = require('../models/Permissions');
-<<<<<<< HEAD
 const Roles = require('../models/Roles');
-=======
->>>>>>> Permission model updated
 const Entity = require('../models/Entity');
 const mongoose = require('mongoose');
 
 exports.index = (req, res) =>{
-<<<<<<< HEAD
-	/*Roles.find().deepPopulate('roles').exec((err, data)=>{
-		Entity.find().deepPopulate('entities').exec((err, data)=>{
-			Permissions.find().deepPopulate('permissions').exec((err, data)=>{
-				
-			});	
-		});
-		
-	});*/
-};
-exports.store = (req, res) =>{
-	newRole = new Permissions(req.body);
-	newRole.save((err, user)=>{
-		if(!err){
-			console.log('Role saved succesfully.');
-			res.json(user);
-		}else{
-			console.log('Role not saved.');
-			res.json(err);
-		}
-	})
-};
-=======
 	Permissions.find().populate('permissions').exec((err, data)=>{
 		if(!err){
 			res.json(data);
@@ -94,5 +68,3 @@ exports.get = (req, res) => {
 		}
 	});
 };
-
->>>>>>> Permission model updated
