@@ -16,9 +16,12 @@ exports.store = (req, res) =>{
 	newUser.save((err, user)=>{
 		if(!err){
 			console.log('User saved succesfully.');
+<<<<<<< HEAD
 			// create DB
 			databaseName = user.first_name;
 			var SlaveDBConn = mongoose.createConnection('mongodb://' + dbConfig.databaseConfig.host + ":" + dbConfig.databaseConfig.port + '/' + databaseName,{ useNewUrlParser: true });
+=======
+>>>>>>> Permission model updated
 			res.json(user);
 		}else{
 			console.log('User not saved.');
@@ -67,6 +70,10 @@ exports.get = (req, res) =>{
 	}).populate('users');
 };
 exports.login = (req, res) =>{
+<<<<<<< HEAD
+=======
+	/*console.log(req.body);*/
+>>>>>>> Permission model updated
 	Users.findOne({first_name: req.body.first_name},(err, item)=>{
 		if(!err){
 			if(item){

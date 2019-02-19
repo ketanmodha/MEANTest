@@ -32,6 +32,12 @@ app.use('/permissions',Permissions);
 const Roles = require('./routes/RolesRoute');
 app.use('/roles',Roles);
 
+<<<<<<< HEAD
+=======
+const Entity = require('./routes/EntityRoute');
+app.use('/entities',Entity);
+
+>>>>>>> Permission model updated
 const host = dbConfig.nodeConfig.host;
 const port = dbConfig.nodeConfig.port;
 console.log(dbConfig);
