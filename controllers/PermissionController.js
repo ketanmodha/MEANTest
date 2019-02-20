@@ -5,7 +5,7 @@ const ModelClassObj = new ModelClass();
 class PermissionController {
 
 	index(req, res){
-		let PermissionModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Permissions;
+		let PermissionModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Permission;
 		PermissionModel.find().populate('permissions').exec((err, data) => {
 			if (!err) {
 				res.json(data);
@@ -16,17 +16,18 @@ class PermissionController {
 	}
 
 	store(req, res){
-		let PermisssionModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Permissions;
-		let data=req.params;
-		let roleId=req.params.role_id;
-		let entityId=req.params.entity_id;
+		let PermisssionModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Permission;
+		let data=req.body;
+		let roleId=req.body.role_id;
+		let entityId=req.body.entity_id;
 		PermisssionModel.findOne({role_id: roleId,entity_id:entityId}, function(err, item) 
 		{
+			console.log(item,'TESTING');
 			if (item==undefined) 
 			{
 				data['data']['entity_id'] = entityId;
 				data['data']['role_id'] = roleId;
-				newPermission = new PermisssionModel(data['data']);
+				let newPermission = new PermisssionModel(data['data']);
 				newPermission.save((err, user)=>{
 					if(!err){
 						console.log('Permission saved succesfully.');
@@ -55,7 +56,7 @@ class PermissionController {
 	}
 
 	show(req, res){
-		let PermissionModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Permissions;
+		let PermissionModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Permission;
 		let roleId = req.params.roleId;
 		PermissionModel.find({role_id: roleId}).populate('entity_id').exec((err, item) => {
 			if (!err) {

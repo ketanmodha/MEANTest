@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
-const MasterDBConn = mongoose.createConnection('mongodb://localhost/difoyer_master',{ useNewUrlParser: true });
+const dbConfig = require("../config/configLoader");
+
+const MasterDBConn = mongoose.createConnection('mongodb://' + dbConfig.databaseConfig.host + ":" + dbConfig.databaseConfig.port + '/difoyer_master', {
+	useNewUrlParser: true
+});
 let SlaveDBConn = '',SlaveUser = '', SlaveProject = '',SlavePermission='',SlaveRole='',SlaveEntity='';
 
 const MasterUserSchema = require('../migrations/Master/UsersMigration');

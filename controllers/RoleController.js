@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 const ModelClass = require('../models/index');
 const ModelClassObj = new ModelClass();
+const dbConfig = require("../config/configLoader");
 
 class RoleController {
 	index(req, res){
-		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Roles;
+		console.log(req);
+		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Role;
 		RoleModel.find().exec((err, data) => {
 			if (!err) {
 				res.json(data);
@@ -14,7 +16,7 @@ class RoleController {
 		});
 	}
 	store(req, res){
-		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Roles;
+		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Role;
 		let newRole = RoleModel(req.body);
 		newRole.save((err, entity)=>{
 			if(!err){
@@ -25,7 +27,7 @@ class RoleController {
 		});
 	}
 	update(req, res){
-		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Roles;
+		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Role;
 		let roleId = req.params.roleId;
 		RoleModel.findOneAndUpdate({
 			_id: roleId
@@ -44,7 +46,7 @@ class RoleController {
 	}
 
 	delete(req, res){
-		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Roles;
+		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Role;
 		let roleId = req.params.roleId;
 		RoleModel.findOneAndRemove({
 			_id: roleId
@@ -59,7 +61,17 @@ class RoleController {
 		});
 	}
 
-	show(req, res){
+	show(req, res)
+	{
+		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Role;
+		let roleId = req.params.roleId;
+		RoleModel.findById(roleId,(err, item)=>{
+			if(!err){
+				res.json(item);
+			}else{
+				res.json(err);
+			}
+		});
 	}
 }
 module.exports = RoleController;
