@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
-const MasterDBConn = mongoose.createConnection('mongodb://localhost/difoyer_master',{ useNewUrlParser: true });
-let SlaveDBConn = '',SlaveUser = '', SlaveProject = '';
+const dbConfig = require("../config/configLoader");
+const MasterDBConn = mongoose.createConnection('mongodb://' + dbConfig.databaseConfig.host + ":" + dbConfig.databaseConfig.port + '/difoyer_master', {
+	useNewUrlParser: true
+});
+let SlaveDBConn = '',
+	SlaveUser = '',
+	SlaveProject = '';
 
 const MasterUserSchema = require('../migrations/Master/UsersMigration');
 const SlaveUserSchema = require('../migrations/Slave/UsersMigration');
@@ -17,18 +22,18 @@ MasterDBConn.on('disconnected', function () {
 
 let DBChanger = function (req, res, next) {
 	let Path = req._parsedUrl.pathname;
-	if(Path=='/users/create-user' || req.headers.accesscode == 'superadmin'){
+	if (Path == '/users/create-user' || req.headers.accesscode == 'superadmin') {
 		next();
-	}else{
-		let DBName = 'difoyer_'+req.headers.accesscode;
-		if(req.headers.accesscode && SlaveDBConn.name != DBName){
-			console.log('slave connected '+DBName+'\n');
+	} else {
+		let DBName = 'difoyer_' + req.headers.accesscode;
+		if (req.headers.accesscode && SlaveDBConn.name != DBName) {
+			console.log('slave connected ' + DBName + '\n');
 			SlaveDBConn = MasterDBConn.useDb(DBName);
-			
-			SlaveUser =  SlaveDBConn.model('Users', SlaveUserSchema);
-			SlaveProject =  SlaveDBConn.model('Projects', SlaveProjectSchema);
-		}else{
-			console.log('slave used '+SlaveDBConn.name+'\n');
+
+			SlaveUser = SlaveDBConn.model('Users', SlaveUserSchema);
+			SlaveProject = SlaveDBConn.model('Projects', SlaveProjectSchema);
+		} else {
+			console.log('slave used ' + SlaveDBConn.name + '\n');
 		}
 		next();
 	}
@@ -36,20 +41,31 @@ let DBChanger = function (req, res, next) {
 
 app.use(DBChanger);
 
-const MasterUser =  MasterDBConn.model('Users', MasterUserSchema);
-const MasterProject =  MasterDBConn.model('Projects', MasterProjectSchema);
+const MasterUser = MasterDBConn.model('Users', MasterUserSchema);
+const MasterProject = MasterDBConn.model('Projects', MasterProjectSchema);
 
-class ModelClass{
-	getAll()  {
-		let Models = {MasterUser,SlaveUser,MasterProject, SlaveProject};
+class ModelClass {
+	getAll() {
+		let Models = {
+			MasterUser,
+			SlaveUser,
+			MasterProject,
+			SlaveProject
+		};
 		return Models;
 	}
-	codeBasedModel(accesscode)  {
+	codeBasedModel(accesscode) {
 		let Models = '';
-		if(accesscode=='superadmin'){
-			Models = {'User':MasterUser,'Project':MasterProject};
-		}else{
-			Models = {'User':SlaveUser,'Project':SlaveProject};
+		if (accesscode == 'superadmin') {
+			Models = {
+				'User': MasterUser,
+				'Project': MasterProject
+			};
+		} else {
+			Models = {
+				'User': SlaveUser,
+				'Project': SlaveProject
+			};
 		}
 		return Models;
 	}
