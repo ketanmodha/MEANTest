@@ -19,7 +19,12 @@ class UserController {
 			}
 		});
 	}
+
 	store(req, res){
+		let accessCode = '';
+  		while (accessCode.length < 6) accessCode += Math.random().toString(36).substr(2, 6 - accessCode.length);
+		req.body.accesscode=accessCode;
+		
 		if(req.headers.accesscode=='superadmin'){
 			let UserModel = ModelClassObj.codeBasedModel(req.headers.accesscode).User;
 			let newUser = UserModel(req.body);
@@ -32,10 +37,10 @@ class UserController {
 				const TempUser = TempDBConn.model('Users', UserSchema);
 
 				const EntitySchema = require('../migrations/Slave/EntitiesMigration');
-				const TempEntity = TempDBConn.model('Users', EntitySchema);
+				const TempEntity = TempDBConn.model('Entities', EntitySchema);
 
 				const newEntity = new TempEntity([{name:'Projects',slug:'projects'},{name:'Users',slug:'users'}]);
-				newUser2.save((err, user)=>{
+				newEntity.save((err, entity)=>{
 					console.log('Entity Created');
 				});
 				TempDBConn.on('disconnected', function () {
