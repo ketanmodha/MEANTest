@@ -2,7 +2,8 @@
     "databaseConfig": {
         "host": "192.168.1.58",
         "port": "27014",
-        "database": "PMSCrud"
+        "database": "difoyer_master",
+        "prefix": "pro_"
     },
     "nodeConfig": {
         "host": "192.168.1.99",

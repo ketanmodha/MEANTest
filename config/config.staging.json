@@ -1,8 +1,9 @@
 {
     "databaseConfig": {
-        "host": "localhost",
-		"port": "27017",
-        "database": "PMSCrud"
+        "host": "192.168.1.58",
+        "port": "27014",
+        "database": "difoyer_master",
+        "prefix": "stg_"
     },
     "nodeConfig": {
         "host": "localhost",
