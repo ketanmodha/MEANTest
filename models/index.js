@@ -1,17 +1,21 @@
 const mongoose = require('mongoose');
-const dbConfig = require("../config/configLoader");
-const MasterDBConn = mongoose.createConnection('mongodb://' + dbConfig.databaseConfig.host + ":" + dbConfig.databaseConfig.port + '/difoyer_master', {
-	useNewUrlParser: true
-});
-let SlaveDBConn = '',
-	SlaveUser = '',
-	SlaveProject = '';
+const MasterDBConn = mongoose.createConnection('mongodb://localhost/difoyer_master',{ useNewUrlParser: true });
+let SlaveDBConn = '',SlaveUser = '', SlaveProject = '',SlavePermission='',SlaveRole='',SlaveEntity='';
 
 const MasterUserSchema = require('../migrations/Master/UsersMigration');
 const SlaveUserSchema = require('../migrations/Slave/UsersMigration');
 
 const MasterProjectSchema = require('../migrations/Master/ProjectsMigration');
 const SlaveProjectSchema = require('../migrations/Slave/ProjectsMigration');
+
+const MasterPermissionSchema = require('../migrations/Master/PermissionsMigration');
+const SlavePermissionSchema = require('../migrations/Slave/PermissionsMigration');
+
+const MasterRoleSchema = require('../migrations/Master/RolesMigration');
+const SlaveRoleSchema = require('../migrations/Slave/RolesMigration');
+
+const MasterEntitySchema = require('../migrations/Master/EntitiesMigration');
+const SlaveEntitySchema = require('../migrations/Slave/EntitiesMigration');
 
 MasterDBConn.on('connected', function () {
 	console.log('master connected');
@@ -22,18 +26,21 @@ MasterDBConn.on('disconnected', function () {
 
 let DBChanger = function (req, res, next) {
 	let Path = req._parsedUrl.pathname;
-	if (Path == '/users/create-user' || req.headers.accesscode == 'superadmin') {
+	if(Path=='/users/create-user' || req.headers.accesscode == 'superadmin'){
 		next();
-	} else {
-		let DBName = 'difoyer_' + req.headers.accesscode;
-		if (req.headers.accesscode && SlaveDBConn.name != DBName) {
-			console.log('slave connected ' + DBName + '\n');
+	}else{
+		let DBName = 'difoyer_'+req.headers.accesscode;
+		if(req.headers.accesscode && SlaveDBConn.name != DBName){
+			console.log('slave connected '+DBName+'\n');
 			SlaveDBConn = MasterDBConn.useDb(DBName);
-
-			SlaveUser = SlaveDBConn.model('Users', SlaveUserSchema);
-			SlaveProject = SlaveDBConn.model('Projects', SlaveProjectSchema);
-		} else {
-			console.log('slave used ' + SlaveDBConn.name + '\n');
+			
+			SlaveUser =  SlaveDBConn.model('Users', SlaveUserSchema);
+			SlaveProject =  SlaveDBConn.model('Projects', SlaveProjectSchema);
+			SlaveRole =  SlaveDBConn.model('Roles', SlaveRoleSchema);
+			SlavePermission =  SlaveDBConn.model('Permissions', SlavePermissionSchema);
+			SlaveEntity =  SlaveDBConn.model('Entity', SlaveEntitySchema);
+		}else{
+			console.log('slave used '+SlaveDBConn.name+'\n');
 		}
 		next();
 	}
@@ -41,31 +48,23 @@ let DBChanger = function (req, res, next) {
 
 app.use(DBChanger);
 
-const MasterUser = MasterDBConn.model('Users', MasterUserSchema);
-const MasterProject = MasterDBConn.model('Projects', MasterProjectSchema);
+const MasterUser =  MasterDBConn.model('Users', MasterUserSchema);
+const MasterProject =  MasterDBConn.model('Projects', MasterProjectSchema);
+const MasterPermission =  MasterDBConn.model('Permissions', MasterPermissionSchema);
+const MasterRole =  MasterDBConn.model('Roles', MasterRoleSchema);
+const MasterEntity =  MasterDBConn.model('Entity', MasterEntitySchema);
 
-class ModelClass {
-	getAll() {
-		let Models = {
-			MasterUser,
-			SlaveUser,
-			MasterProject,
-			SlaveProject
-		};
+class ModelClass{
+	getAll()  {
+		let Models = {MasterUser,SlaveUser,MasterProject, SlaveProject,MasterPermission,SlavePermission,MasterRole,SlaveRole,MasterEntity,SlaveEntity};
 		return Models;
 	}
-	codeBasedModel(accesscode) {
+	codeBasedModel(accesscode)  {
 		let Models = '';
-		if (accesscode == 'superadmin') {
-			Models = {
-				'User': MasterUser,
-				'Project': MasterProject
-			};
-		} else {
-			Models = {
-				'User': SlaveUser,
-				'Project': SlaveProject
-			};
+		if(accesscode=='superadmin'){
+			Models = {'User':MasterUser,'Project':MasterProject,'Permission':MasterPermission,'Entity':MasterEntity,'Role':MasterRole};
+		}else{
+			Models = {'User':SlaveUser,'Project':SlaveProject,'Permission':SlavePermission,'Entity':SlaveEntity,'Role':SlaveRole};
 		}
 		return Models;
 	}

@@ -1,60 +1,65 @@
-const Roles = require('../models/Roles');
 const mongoose = require('mongoose');
+const ModelClass = require('../models/index');
+const ModelClassObj = new ModelClass();
 
-exports.index = (req, res) =>{
-	Roles.find().populate('roles').exec((err, data)=>{
-		if(!err){
-			res.json(data);
-		}else{
-			res.send(err);
-		}
-	});
-};
-exports.store = (req, res) =>{
-	newRole = new Roles(req.body);
-	newRole.save((err, user)=>{
-		if(!err){
-			console.log('Role saved succesfully.');
-			res.json(user);
-		}else{
-			console.log('Role not saved.');
-			res.json(err);
-		}
-	})
-};
-exports.update = (req, res) =>{
-	let roleId = req.params.roleId;
-	req.body.startDate = Math.floor(new Date(req.body.startDate) / 1000);
-	req.body.endDate = Math.floor(new Date(req.body.endDate) / 1000);
-	Roles.findOneAndUpdate({_id: roleId}, {$set: req.body}, {new: true,useFindAndModify: false},(err, item)=>{
-		if(!err){
-			res.json(item);
-		}else{
-			res.json(err);
-		}
-	});
-};
-exports.delete = (req, res) =>{
-	let roleId = req.params.roleId;
-	Roles.findById(roleId,(err, item)=>{
-		if(!err){
-			let roleIds = item.roles;
-			item.remove((err, item)=>{
-				Roles.deleteMany({ _id: { $in: roleIds}}, function(err) {});
-			});
-			res.json({'message':'item deleted'});
-		}else{
-			res.json(err);
-		}
-	});
-};
-exports.get = (req, res) =>{
-	let roleId = req.params.roleId;
-	Roles.findById(roleId,(err, item)=>{
-		if(!err){
-			res.json(item);
-		}else{
-			res.json(err);
-		}
-	}).populate('roles');
-};
+class RoleController {
+	index(req, res){
+		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Roles;
+		RoleModel.find().exec((err, data) => {
+			if (!err) {
+				res.json(data);
+			} else {
+				res.send(err);
+			}
+		});
+	}
+	store(req, res){
+		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Roles;
+		let newRole = RoleModel(req.body);
+		newRole.save((err, entity)=>{
+			if(!err){
+				res.json({'entity':entity});
+			}else{
+				res.json(entity);
+			}
+		});
+	}
+	update(req, res){
+		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Roles;
+		let roleId = req.params.roleId;
+		RoleModel.findOneAndUpdate({
+			_id: roleId
+		}, {
+			$set: req.body
+		}, {
+			new: true,
+			useFindAndModify: false
+		}, (err, item) => {
+			if (!err) {
+				res.json(item);
+			} else {
+				res.json(err);
+			}
+		});
+	}
+
+	delete(req, res){
+		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Roles;
+		let roleId = req.params.roleId;
+		RoleModel.findOneAndRemove({
+			_id: roleId
+		}, {
+			useFindAndModify: false
+		}, (err, item) => {
+			if (!err) {
+				res.json({'message':'success'});
+			} else {
+				res.json(err);
+			}
+		});
+	}
+
+	show(req, res){
+	}
+}
+module.exports = RoleController;
