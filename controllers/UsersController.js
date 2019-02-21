@@ -5,10 +5,10 @@ const dbConfig = require("../config/configLoader");
 
 class UserController {
 
-	privateFunction(){
+	privateFunction() {
 		console.log('private called');
 	};
-	index(req, res){
+	index(req, res) {
 		console.log(req);
 		let UserModel = ModelClassObj.codeBasedModel(req.headers.accesscode).User;
 		UserModel.find().exec((err, data) => {
@@ -20,17 +20,18 @@ class UserController {
 		});
 	}
 
-	store(req, res){
+	store(req, res) {
 		let accessCode = '';
-  		while (accessCode.length < 6) accessCode += Math.random().toString(36).substr(2, 6 - accessCode.length);
-		req.body.accesscode=accessCode;
-		
-		if(req.headers.accesscode=='superadmin'){
+		while (accessCode.length < 6) accessCode += Math.random().toString(36).substr(2, 6 - accessCode.length);
+		req.body.accesscode = accessCode;
+
+		if (req.headers.accesscode == 'superadmin') {
 			let UserModel = ModelClassObj.codeBasedModel(req.headers.accesscode).User;
 			let newUser = UserModel(req.body);
-			newUser.save((err, user)=>{
-				let DBName = 'difoyer_'+req.body.accesscode;
-				const TempDBConn = mongoose.createConnection('mongodb://' + dbConfig.databaseConfig.host + ":" + dbConfig.databaseConfig.port + '/' + DBName, {
+			newUser.save((err, user) => {
+				let DBName = 'difoyer_' + req.body.accesscode;
+				const connectionString = 'mongodb://' + dbConfig.databaseConfig.host + ":" + dbConfig.databaseConfig.port + '/' + dbConfig.databaseConfig.prefix + DBName;
+				const TempDBConn = mongoose.createConnection(connectionString, {
 					useNewUrlParser: true
 				});
 				const UserSchema = require('../migrations/Slave/UsersMigration');
@@ -39,32 +40,43 @@ class UserController {
 				const EntitySchema = require('../migrations/Slave/EntitiesMigration');
 				const TempEntity = TempDBConn.model('Entities', EntitySchema);
 
-				const newEntity = new TempEntity([{name:'Projects',slug:'projects'},{name:'Users',slug:'users'}]);
-				newEntity.save((err, entity)=>{
+				const newEntity = new TempEntity([{
+					name: 'Projects',
+					slug: 'projects'
+				}, {
+					name: 'Users',
+					slug: 'users'
+				}]);
+				newEntity.save((err, entity) => {
 					console.log('Entity Created');
 				});
 				TempDBConn.on('disconnected', function () {
 					console.log('temp disconnected');
 				});
 				const newUser2 = new TempUser(req.body);
-				newUser2.save((err, user)=>{
+				newUser2.save((err, user) => {
 					TempDBConn.close();
 				});
-				res.json({'DBname':DBName,'user':user});
+				res.json({
+					'DBname': DBName,
+					'user': user
+				});
 			});
-		}else{
+		} else {
 			let UserModel = ModelClassObj.codeBasedModel(req.headers.accesscode).User;
 			let newUser = UserModel(req.body);
-			newUser.save((err, user)=>{
-				if(!err){
-					res.json({'user':user});
-				}else{
+			newUser.save((err, user) => {
+				if (!err) {
+					res.json({
+						'user': user
+					});
+				} else {
 					res.json(user);
 				}
 			});
 		}
 	}
-	update(req, res){
+	update(req, res) {
 		let UserModel = ModelClassObj.codeBasedModel(req.headers.accesscode).User;
 		let userId = req.params.userId;
 		UserModel.findOneAndUpdate({
@@ -82,7 +94,7 @@ class UserController {
 			}
 		});
 	}
-	delete(req, res){
+	delete(req, res) {
 		let UserModel = ModelClassObj.codeBasedModel(req.headers.accesscode).User;
 		let userId = req.params.userId;
 		UserModel.findOneAndRemove({
@@ -91,18 +103,22 @@ class UserController {
 			useFindAndModify: false
 		}, (err, item) => {
 			if (!err) {
-				res.json({'message':'success'});
+				res.json({
+					'message': 'success'
+				});
 			} else {
 				res.json(err);
 			}
 		});
 	}
-	projectStore(req, res){
+	projectStore(req, res) {
 		const newProject = ModelClassObj.getAll().MasterProject(req.body);
 		newProject.save();
 		const newProject2 = ModelClassObj.getAll().SlaveProject(req.body);
 		newProject2.save();
-		res.json({'hello':'world'});
+		res.json({
+			'hello': 'world'
+		});
 	}
 
 	show(req, res) {
