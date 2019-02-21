@@ -26,6 +26,12 @@ class UserController {
 		req.body.accesscode = accessCode;
 
 		if (req.headers.accesscode == 'superadmin') {
+			let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Role;
+			let addRole;
+			RoleModel.findOne({_id: req.body.role_id}).exec((err, item) => 
+			{
+				addRole=item;
+			});
 			let UserModel = ModelClassObj.codeBasedModel(req.headers.accesscode).User;
 			let newUser = UserModel(req.body);
 			newUser.save((err, user) => {
@@ -44,12 +50,22 @@ class UserController {
 				newEntity.save((err, entity)=>{
 					console.log('Entity Created');
 				});
-				TempDBConn.on('disconnected', function () {
-					console.log('temp disconnected');
+				
+				const RoleSchema = require('../migrations/Slave/RolesMigration');
+				const TempRole = TempDBConn.model('roles', RoleSchema);
+				const newRole = new TempRole({name:addRole['name'],slug:addRole['slug']});
+				let roleID;
+				newRole.save((err, entity)=>{
+					console.log('Role Created');
 				});
+				req.body.role_id=newRole._id;
 				const newUser2 = new TempUser(req.body);
 				newUser2.save((err, user) => {
 					TempDBConn.close();
+				});
+
+				TempDBConn.on('disconnected', function () {
+					console.log('temp disconnected');
 				});
 				res.json({
 					'DBname': DBName,
