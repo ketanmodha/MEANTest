@@ -19,6 +19,16 @@ app.use((req, res, next) => {
 
 app.use('/', routes);
 
+const Permissions = require('./routes/PermissionRoute');
+app.use('/permissions',Permissions);
+
+const Roles = require('./routes/RolesRoute');
+app.use('/roles',Roles);
+
+
+const Entity = require('./routes/EntityRoute');
+app.use('/entities',Entity);
+
 const host = dbConfig.nodeConfig.host;
 const port = dbConfig.nodeConfig.port;
 
