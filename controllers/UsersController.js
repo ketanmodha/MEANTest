@@ -40,14 +40,8 @@ class UserController {
 				const EntitySchema = require('../migrations/Slave/EntitiesMigration');
 				const TempEntity = TempDBConn.model('Entities', EntitySchema);
 
-				const newEntity = new TempEntity([{
-					name: 'Projects',
-					slug: 'projects'
-				}, {
-					name: 'Users',
-					slug: 'users'
-				}]);
-				newEntity.save((err, entity) => {
+				const newEntity = new TempEntity({name:'Projects',slug:'projects'});
+				newEntity.save((err, entity)=>{
 					console.log('Entity Created');
 				});
 				TempDBConn.on('disconnected', function () {

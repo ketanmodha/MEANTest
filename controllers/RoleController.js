@@ -18,11 +18,11 @@ class RoleController {
 	store(req, res){
 		let RoleModel = ModelClassObj.codeBasedModel(req.headers.accesscode).Role;
 		let newRole = RoleModel(req.body);
-		newRole.save((err, entity)=>{
+		newRole.save((err, role)=>{
 			if(!err){
-				res.json({'entity':entity});
+				res.json({'role':role});
 			}else{
-				res.json(entity);
+				res.json(role);
 			}
 		});
 	}
