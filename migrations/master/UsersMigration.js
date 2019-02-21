@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let UserSchema = new Schema({
+	role_id: [{ type: Schema.Types.ObjectId, ref: 'Roles' }],
 	accesscode:{type:String,default:''},
 	first_name:String,
 	last_name:String,
