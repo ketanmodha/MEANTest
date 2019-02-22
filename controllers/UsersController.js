@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const ModelClass = require('../models/index');
 const ModelClassObj = new ModelClass();
 const dbConfig = require("../config/configLoader");
-
+const PermissionSeeder = require("../seeds/PermissionsSeeder");
 class UserController {
 
 	privateFunction() {
@@ -32,6 +32,8 @@ class UserController {
 			{
 				addRole=item;
 			});
+			let newRoleId = [];
+			req.body.role_id=newRoleId;
 			let UserModel = ModelClassObj.codeBasedModel(req.headers.accesscode).User;
 			let newUser = UserModel(req.body);
 			newUser.save((err, user) => {
@@ -45,20 +47,31 @@ class UserController {
 
 				const EntitySchema = require('../migrations/Slave/EntitiesMigration');
 				const TempEntity = TempDBConn.model('Entities', EntitySchema);
+				let entityData=[{name:'Projects',slug:'projects'},{name:'Users',slug:'users'},{name:'Permissions',slug:'permissions'},{name:'Roles',slug:'roles'}];
+				let entityIds=[];
+				for (var i = 0; i < entityData.length; i++) {
+					let  newEntity = new TempEntity(entityData[i]);
+					newEntity.save();
+					entityIds.push(newEntity._id);
+				}
 
-				const newEntity = new TempEntity({name:'Projects',slug:'projects'});
-				newEntity.save((err, entity)=>{
-					console.log('Entity Created');
-				});
-				
-				const RoleSchema = require('../migrations/Slave/RolesMigration');
-				const TempRole = TempDBConn.model('roles', RoleSchema);
-				const newRole = new TempRole({name:addRole['name'],slug:addRole['slug']});
-				let roleID;
-				newRole.save((err, entity)=>{
-					console.log('Role Created');
-				});
-				req.body.role_id=newRole._id;
+				if (addRole!=undefined){
+					const RoleSchema = require('../migrations/Slave/RolesMigration');
+					const TempRole = TempDBConn.model('roles', RoleSchema);
+					const newRole = new TempRole({name:addRole['name'],slug:addRole['slug']});
+					let roleID;
+					newRole.save((err, entity)=>{
+						console.log('Role Created');
+					});
+					newRoleId.push(newRole._id);
+
+					if (addRole['slug']=='admin') 
+					{
+						const createPermission = new PermissionSeeder();
+						createPermission.run(newRole._id,entityIds,TempDBConn);
+					}
+				}
+				req.body.role_id=newRoleId;
 				const newUser2 = new TempUser(req.body);
 				newUser2.save((err, user) => {
 					TempDBConn.close();
@@ -72,7 +85,9 @@ class UserController {
 					'user': user
 				});
 			});
-		} else {
+		} 
+		else
+		{
 			let UserModel = ModelClassObj.codeBasedModel(req.headers.accesscode).User;
 			let newUser = UserModel(req.body);
 			newUser.save((err, user) => {
