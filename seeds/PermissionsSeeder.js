@@ -4,7 +4,7 @@ const ModelClass = require('../models/index');
 const ModelClassObj = new ModelClass();
 class PermissionsSeeder {
 	run(role_id,entityIds,TempDBConn) {
-		const PermissionSchema = require('../migrations/Slave/EntitiesMigration');
+		const PermissionSchema = require('../migrations/Slave/PermissionsMigration');
 		const TempPermission = TempDBConn.model('Permissions', PermissionSchema);
 		let permissionData=[];
 		entityIds.forEach(function(ids){
@@ -12,6 +12,7 @@ class PermissionsSeeder {
 		});
 
 		for (var i = 0; i < permissionData.length; i++) {
+			console.log(permissionData[i]);
 			let  newPermission = new TempPermission(permissionData[i]);
 			newPermission.save();
 		}
