@@ -16,7 +16,6 @@ class AuthController {
 					setTimeout(() => {
 							res.json({'message':'success','user':item,'role':roleData});
 					},500);
-					
 				}else{
 					res.json({'message':'fail'});
 				}
@@ -24,17 +23,6 @@ class AuthController {
 				res.json(err);
 			}
 		});
-		/*UserModel.findOne({first_name: req.body.first_name}).populate('roles').exec((err, item) => {
-			if(!err){
-				if(item){
-					res.json({'message':'success','user':item});
-				}else{
-					res.json({'message':'fail'});
-				}
-			}else{
-				res.json(err);
-			}
-		});*/
 	}
 }
 module.exports = AuthController;
