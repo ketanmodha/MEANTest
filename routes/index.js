@@ -4,7 +4,7 @@ const AuthController = require('../controllers/AuthController.js')
 const AuthControllerObj = new AuthController();
 
 router.get('/', function(req, res) {
-	res.json({'hello':'world'});
+	res.json({'hello 1':'world 1'});
 });
 
 router.post('/login', AuthControllerObj.postLogin);
